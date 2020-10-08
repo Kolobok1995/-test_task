@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "yii2_application".
  *
  * @property int $id
- * @property int $id_user
+ * @property int $user_id
  * @property string $subject
  * @property string $message
  * @property string $file
@@ -17,6 +17,12 @@ use Yii;
  */
 class Application extends \yii\db\ActiveRecord
 {
+    
+    
+    // Статуc
+    const STATUS_NOT_VIEWED = 0;
+    const STATUS_VIEWED = 1;
+    
     /**
      * {@inheritdoc}
      */
@@ -31,8 +37,8 @@ class Application extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_user', 'subject', 'message', 'file', 'created_at'], 'required'],
-            [['id_user', 'status', 'created_at'], 'integer'],
+            [['user_id', 'subject', 'message', 'created_at'], 'required'],
+            [['user_id', 'status', 'created_at'], 'integer'],
             [['message'], 'string'],
             [['subject', 'file'], 'string', 'max' => 255],
         ];
@@ -45,7 +51,7 @@ class Application extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'id_user' => 'Id User',
+            'user_id' => 'Id User',
             'subject' => 'Subject',
             'message' => 'Message',
             'file' => 'File',

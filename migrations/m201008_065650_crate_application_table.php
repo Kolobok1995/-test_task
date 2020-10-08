@@ -14,10 +14,10 @@ class m201008_065650_crate_application_table extends Migration
         
         $this->createTable('{{%application}}', [
             'id' => $this->primaryKey(),
-            'id_user' => $this->integer()->notNull(),
+            'user_id' => $this->integer()->notNull(),
             'subject' => $this->string(255)->notNull(),
             'message' => $this->text()->notNull(),
-            'file' => $this->string(255)->notNull(),
+            'file' => $this->string(255)->defaultValue(null),
             'status' => $this->smallInteger()->notNull()->defaultValue(1),
             'created_at' => $this->integer()->notNull()
         ], $tableOptions);

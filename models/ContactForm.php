@@ -1,5 +1,4 @@
 <?php
-
 namespace app\models;
 
 use Yii;
@@ -10,56 +9,58 @@ use yii\base\Model;
  */
 class ContactForm extends Model
 {
-    public $name;
-    public $email;
     public $subject;
     public $body;
-    public $verifyCode;
-
-
+    public $imageFile;
+    
     /**
+     *
      * @return array the validation rules.
      */
     public function rules()
     {
         return [
-            // name, email, subject and body are required
-            [['name', 'email', 'subject', 'body'], 'required'],
-            // email has to be a valid email address
-            ['email', 'email'],
-            // verifyCode needs to be entered correctly
-            ['verifyCode', 'captcha'],
+            [['imageFile'], 'file', 'skipOnEmpty' => true],
+            [['subject', 'body'], 'required']
         ];
     }
 
-    /**
-     * @return array customized attribute labels
-     */
-    public function attributeLabels()
-    {
-        return [
-            'verifyCode' => 'Verification Code',
-        ];
-    }
-
-    /**
-     * Sends an email to the specified email address using the information collected by this model.
-     * @param string $email the target email address
-     * @return bool whether the model passes validation
-     */
-    public function contact($email)
+    public function contact()
     {
         if ($this->validate()) {
-            Yii::$app->mailer->compose()
-                ->setTo($email)
-                ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->params['senderName']])
-                ->setReplyTo([$this->email => $this->name])
-                ->setSubject($this->subject)
-                ->setTextBody($this->body)
-                ->send();
+            $application = new Application();
+            $application->user_id = Yii::$app->getUser()->identity->id;
+            $application->subject = $this->subject;
+            $application->message = $this->body;
+            $application->status = Application::STATUS_NOT_VIEWED;
+            $application->created_at = time();
+            
+           
+            $filePath = $this->upload();
+            if($filePath != false){
+                $application->file = $filePath;                
+            }
 
-            return true;
+            if ($application->save()) {
+                return true;
+            }
         }
         return false;
+    }
+    
+    public function upload()
+    {
+        if(empty($this->imageFile) || !isset($this->imageFile))
+            return false;
+            
+        $name = time()  . '.' . $this->imageFile->extension;
+        if ($this->validate()) {
+            $path = Yii::getAlias('@webroot'). '/' . 'files' . '/' ;
+            $this->imageFile->saveAs($path . $name);
+            return $path . $name;
+            
+        } else {
+            return false;
+        }
     }
 }

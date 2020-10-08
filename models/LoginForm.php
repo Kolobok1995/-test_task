@@ -27,10 +27,7 @@ class LoginForm extends Model
     {
         return [
             [
-                [
-                    'username',
-                    'password'
-                ],
+                ['username','password'],
                 'required'
             ],
             [
