@@ -1,4 +1,5 @@
 <?php
+
 namespace app\controllers;
 
 use Yii;
@@ -13,86 +14,6 @@ use app\models\SignupForm;
 
 class SiteController extends Controller
 {
-
-    /**
-     *
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['login', 'logout', 'signup'],
-                'rules' => [
-                    [
-                        'allow' => true,
-                        'actions' => ['login', 'signup'],
-                        'roles' => [],
-                    ],
-                    [
-                        'allow' => true,
-                        'actions' => ['logout'],
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-        ];
-        
-        
-        /***/
-        return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'allow' => false,
-                        'roles' => [
-                            '?'
-                        ],
-                        'denyCallback' => function ($rule, $action) {
-                            return $this->redirect(Url::toRoute([
-                                '/login'
-                            ]));
-                        }
-                    ],
-                    [
-                        'actions' => [],
-                        'allow' => true,
-                        'roles' => [
-                            '@'
-                        ],
-                        'matchCallback' => function ($rule, $action) {
-                            /** @var User $user */
-                            $user = Yii::$app->user->getIdentity();
-                            return $user->isAdmin() || $user->isManager();
-                        }
-                    ]
-                ]
-            ]
-        ];
-        /***/
-        
-        
-        
-    }
-
-    /**
-     *
-     * {@inheritdoc}
-     */
-    public function actions()
-    {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction'
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null
-            ]
-        ];
-    }
 
     /**
      * Displays homepage.
@@ -111,25 +32,24 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (! Yii::$app->user->isGuest) {
-          // return $this->goHome();
-            
-            if (Yii::$app->getUser()->identity->role === User::ROLE_CLIENT) {
-                return $this->redirect(Url::to('/contact'));
-            } else {
-                if (Yii::$app->getUser()->identity->role === User::ROLE_MANAGER) {
-                    return $this->redirect(Url::to('/application'));
-                }
+        if (!Yii::$app->user->isGuest) {
+            if (Yii::$app->getUser()->identity->role == User::ROLE_CLIENT) {
+                return $this->redirect(Url::to('/feedback'));
+            }
+
+            if (Yii::$app->getUser()->identity->role == User::ROLE_MANAGER) {
+                return $this->redirect(Url::to('/application'));
             }
         }
+
 
         $model = new LoginForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            if (Yii::$app->getUser()->identity->role === User::ROLE_CLIENT) {
-                return $this->redirect(Url::to('/contact'));
+            if (Yii::$app->getUser()->identity->role == User::ROLE_CLIENT) {
+                return $this->redirect(Url::to('/feedback'));
             } else {
-                if (Yii::$app->getUser()->identity->role === User::ROLE_MANAGER) {
+                if (Yii::$app->getUser()->identity->role == User::ROLE_MANAGER) {
                     return $this->redirect(Url::to('/application'));
                 }
             }
@@ -163,7 +83,6 @@ class SiteController extends Controller
         $model = new SignupForm();
         $user = new User();
 
-        
         if ($model->load(Yii::$app->request->post()) && $model->signup()) {
             return $this->redirect(Url::to('/login'));
         }
@@ -173,31 +92,5 @@ class SiteController extends Controller
         ]);
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
 
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
 }
