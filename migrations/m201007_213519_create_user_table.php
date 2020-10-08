@@ -17,14 +17,14 @@ class m201007_213519_create_user_table extends Migration
             'username' => $this->string(255)->notNull()->unique(),
             'password_hash' => $this->string(255)->notNull(),
             'email' => $this->string()->notNull()->unique(),
-            'status' => $this->smallInteger()->notNull()->defaultValue(10),
+            'status' => $this->smallInteger()->notNull()->defaultValue(1),
             'created_at' => $this->integer()->notNull(),
-            'role' => $this->string(255)->notNull()
+            'role' => $this->smallInteger()->notNull()
         ], $tableOptions);
     }
 
     public function down()
     {
-        $this->dropTable('user');
+        $this->dropTable('{{%user}}');
     }
 }

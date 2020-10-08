@@ -1,5 +1,4 @@
 <?php
-
 namespace app\controllers;
 
 use Yii;
@@ -9,10 +8,15 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\helpers\Url;
+use app\models\User;
+use app\models\SignupForm;
 
 class SiteController extends Controller
 {
+
     /**
+     *
      * {@inheritdoc}
      */
     public function behaviors()
@@ -20,37 +24,74 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['login', 'logout', 'signup'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
                         'allow' => true,
+                        'actions' => ['login', 'signup'],
+                        'roles' => [],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['logout'],
                         'roles' => ['@'],
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
         ];
+        
+        
+        /***/
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => false,
+                        'roles' => [
+                            '?'
+                        ],
+                        'denyCallback' => function ($rule, $action) {
+                            return $this->redirect(Url::toRoute([
+                                '/login'
+                            ]));
+                        }
+                    ],
+                    [
+                        'actions' => [],
+                        'allow' => true,
+                        'roles' => [
+                            '@'
+                        ],
+                        'matchCallback' => function ($rule, $action) {
+                            /** @var User $user */
+                            $user = Yii::$app->user->getIdentity();
+                            return $user->isAdmin() || $user->isManager();
+                        }
+                    ]
+                ]
+            ]
+        ];
+        /***/
+        
+        
+        
     }
 
     /**
+     *
      * {@inheritdoc}
      */
     public function actions()
     {
         return [
             'error' => [
-                'class' => 'yii\web\ErrorAction',
+                'class' => 'yii\web\ErrorAction'
             ],
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
+                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null
+            ]
         ];
     }
 
@@ -71,18 +112,33 @@ class SiteController extends Controller
      */
     public function actionLogin()
     {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
+        if (! Yii::$app->user->isGuest) {
+          // return $this->goHome();
+            
+            if (Yii::$app->getUser()->identity->role === User::ROLE_CLIENT) {
+                return $this->redirect(Url::to('/contact'));
+            } else {
+                if (Yii::$app->getUser()->identity->role === User::ROLE_MANAGER) {
+                    return $this->redirect(Url::to('/application'));
+                }
+            }
         }
 
         $model = new LoginForm();
+
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
+            if (Yii::$app->getUser()->identity->role === User::ROLE_CLIENT) {
+                return $this->redirect(Url::to('/contact'));
+            } else {
+                if (Yii::$app->getUser()->identity->role === User::ROLE_MANAGER) {
+                    return $this->redirect(Url::to('/application'));
+                }
+            }
         }
 
         $model->password = '';
         return $this->render('login', [
-            'model' => $model,
+            'model' => $model
         ]);
     }
 
@@ -99,6 +155,26 @@ class SiteController extends Controller
     }
 
     /**
+     * Signup action.
+     *
+     * @return Response
+     */
+    public function actionSignup()
+    {
+        $model = new SignupForm();
+        $user = new User();
+
+        
+        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+            return $this->redirect(Url::to('/login'));
+        }
+
+        return $this->render('signup', [
+            'model' => $model
+        ]);
+    }
+
+    /**
      * Displays contact page.
      *
      * @return Response|string
@@ -112,7 +188,7 @@ class SiteController extends Controller
             return $this->refresh();
         }
         return $this->render('contact', [
-            'model' => $model,
+            'model' => $model
         ]);
     }
 

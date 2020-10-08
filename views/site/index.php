@@ -14,7 +14,7 @@ $this->title = 'My Yii Application';
 
         <p>
             <a class="btn btn-lg btn-success" href="/login">Войти</a>
-            <a class="btn btn-lg btn-success" href="/login">Зарегистрироваться</a>
+            <a class="btn btn-lg btn-success" href="/signup">Зарегистрироваться</a>
         </p>
     </div>
 
