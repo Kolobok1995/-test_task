@@ -28,8 +28,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'message:ntext',
             'id_user',
             'file',
-            //'status',
-            //'created_at',
+            'status',
+            'created_at',
 
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{view}',
