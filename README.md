@@ -11,7 +11,7 @@
 
 2. cd task-test-KM
 
-3. php composer.phar install
+3. composer update
 
 4. Создаем базу данных yii2_test_task
 
