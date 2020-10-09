@@ -16,9 +16,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php if (Yii::$app->session->hasFlash('contactFormSubmitted')): ?>
 
         <div class="alert alert-success">
-            Thank you for contacting us. We will respond to you as soon as possible.
+            Заявка оправлена! 
         </div>
 
+    <?php elseif(Yii::$app->session->hasFlash('contactFormErrorTime')): ?>
+   		  <div class="alert alert-danger">
+          К сожалению отправить заявку можно раз в сутки.
+          <br>
+          Подождите еще <?php echo Yii::$app->session->getFlash('contactFormErrorTime'); ?> 
+      	  </div>
     <?php else: ?>
 
         <p>

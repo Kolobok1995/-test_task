@@ -57,10 +57,28 @@ class ContactForm extends Model
         if ($this->validate()) {
             $path = Yii::getAlias('@webroot'). '/' . 'files' . '/' ;
             $this->imageFile->saveAs($path . $name);
-            return $path . $name;
+            return '/files/' . $name;
             
         } else {
             return false;
         }
     }
+    
+    
+    public function getLastApplicationForUser(){
+        $userId = Yii::$app->getUser()->identity->id;
+        $appLast = Application::find($userId)->orderBy('id DESC')->one();       
+        if(!empty($appLast) && isset($appLast)){
+            $lastDate =$appLast->created_at;
+            if( time() > $lastDate + 86400 ){
+                return true;
+            }else{
+                return (86400 - time() + $lastDate);
+            }
+        }else{
+            return true;
+        }
+        
+    }
+    
 }

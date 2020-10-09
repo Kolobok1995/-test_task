@@ -16,7 +16,7 @@ $this->title = 'My Yii Application';
         <h2 class="h2">Вы на главной странице сайта</h2>
 
         <?php if(Yii::$app->user->isGuest): ?>
-            <p>Увы, для продолжениря придется войти или зарегистрироваться! </p>
+            <p>Увы, для продолжения придется войти или зарегистрироваться! </p>
             <p>
                 <a class="btn btn-lg btn-success" href="/login">Войти</a>
                 <a class="btn btn-lg btn-info" href="/signup">Зарегистрироваться</a>
@@ -27,7 +27,7 @@ $this->title = 'My Yii Application';
 
 
             <?php if (Yii::$app->getUser()->identity->role == User::ROLE_CLIENT): ?>
-                <a class="btn btn-lg btn-success" href="/feedback">Оставить заявоку</a>
+                <a class="btn btn-lg btn-success" href="/feedback">Оставить заявку</a>
             <?php elseif (Yii::$app->getUser()->identity->role == User::ROLE_MANAGER): ?>
                 <a class="btn btn-lg btn-success" href="/application">Посмотреть список заявок</a>
             <?php endif; ?>

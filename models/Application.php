@@ -59,4 +59,17 @@ class Application extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
+    
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'user_id']);
+    }
+    
+    public function getStatusText(){
+        if($this->status == self::STATUS_NOT_VIEWED){
+            return 'Новая заявка';
+        } else if($this->status == self::STATUS_VIEWED){
+            return 'На эту заявку я уже ответил';
+        }
+    }
 }

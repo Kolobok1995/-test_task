@@ -6,17 +6,13 @@ use yii\grid\GridView;
 /* @var $this yii\web\View */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Applications';
+$this->title = 'Список заявок';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
 <div class="application-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Create Application', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -26,10 +22,35 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'subject',
             'message:ntext',
-            'user_id',
-            'file',
-            'status',
-            'created_at',
+            [
+                'attribute'=>'user_id',
+                'label'=>'Пользователь',
+                'content'=>function($data){
+                    return $data->user->username;
+                }
+            ],            
+            [
+                'attribute'=>'file',
+                'label'=>'Ссылка на файл',
+                'content'=>function($data){
+                    return !empty($data->file) ? "<a target='target'  href='$data->file'>Просмотреть файл</a>" : ' - ';
+                }
+            ],
+            [
+                'attribute'=>'status',
+                'label'=>'Статус',
+                'content'=>function($data){
+                    return $data->statusText;
+                }
+            ],
+            
+            [
+                'attribute'=>'created_at',
+                'label'=>'Дата создания заявки',
+                'content'=>function($data){
+                    return date("d.m.Y (H:i:s)", $data->created_at);
+                }
+            ],
 
             ['class' => 'yii\grid\ActionColumn',
                 'template' => '{view}',
