@@ -20,7 +20,6 @@ class FeedbackController extends \yii\web\Controller
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                // 'only' => ['index'],
                 'rules' => [
                     [
                         'actions' => [],
@@ -49,14 +48,14 @@ class FeedbackController extends \yii\web\Controller
 
                 'denyCallback' => function ($rule, $action) {
                     return $this->redirect(Url::toRoute([
-                        '/login'
+                        '/home'
                     ]));
                 }
             ]
         ];
     }
     
-   
+
     
     public function actionIndex()
     {
