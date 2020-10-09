@@ -21,6 +21,18 @@ class m201007_213519_create_user_table extends Migration
             'created_at' => $this->integer()->notNull(),
             'role' => $this->smallInteger()->notNull()
         ], $tableOptions);
+        
+        
+        $this->insert('{{%user}}', [
+            'id' => 1,
+            'username' => 'admin',
+            'password_hash' =>  Yii::$app->security->generatePasswordHash('admin'),
+            'email' => 'admin@admin.admin',
+            'status' => 1,
+            'created_at' => time(),
+            'role' => 0
+        ]);
+        
     }
 
     public function down()
